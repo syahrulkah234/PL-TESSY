@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html>
 <head>
-  <title>Pricelist</title>
+  <title>PLnya Tessy</title>
   <style>
     body { font-family: Arial; }
     #menu button {
@@ -46,7 +46,7 @@ const sheetID = "ISI_ID_KAMU_DISINI";
 let currentData = [];
 
 // MENU
-fetch(`https://opensheet.elk.sh/${sheetID}/kategori`)
+fetch(`https://docs.google.com/spreadsheets/d/e/2PACX-1vQY2KKsA485VuL2MADDoZv9M-ZBNHvuB7TEebfAM_rTrJJvRdWDztDXoLn4M9_eAjwx9q5BWuzp_lbX/pubhtml${sheetID}/kategori`)
   .then(res => res.json())
   .then(data => {
     let menuHTML = "";
@@ -62,7 +62,7 @@ fetch(`https://opensheet.elk.sh/${sheetID}/kategori`)
 
 // LOAD DATA
 function loadSheet(namaSheet) {
-  fetch(`https://opensheet.elk.sh/${sheetID}/${namaSheet}`)
+  fetch(`https://docs.google.com/spreadsheets/d/e/2PACX-1vQY2KKsA485VuL2MADDoZv9M-ZBNHvuB7TEebfAM_rTrJJvRdWDztDXoLn4M9_eAjwx9q5BWuzp_lbX/pubhtml${sheetID}/${namaSheet}`)
     .then(res => res.json())
     .then(data => {
       currentData = data;
