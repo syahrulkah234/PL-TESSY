@@ -42,7 +42,7 @@
 </table>
 
 <script>
-const sheetID = "1RIZxMJx3wsVJmWyhdTSv72JMRTQ4_am5MAAiDU9ss4U";
+const sheetID = "1m-MFmrKUysTBYDmXAP5JqZoChLIa0Rd99d4nO1yH6RE";
 let currentData = [];
 
 // LOAD MENU DARI SHEET "kategori"
@@ -52,30 +52,18 @@ fetch(`https://opensheet.elk.sh/${sheetID}/kategori`)
     let menuHTML = "";
 
     data.forEach(item => {
-      // mapping manual dari Kategori ke nama sheet
-      let sheetMap = {
-        "Metalan": "PL METALAN",
-        "Besi Beton Wiremesh": "PL BESI BETON",
-        "Hollow Eco": "PL HOLLOW",
-        "Besi Eco": "PL BESI",
-        "Pipa Eco": "PL PIPA",
-        "BRC": "PL BRC",
-        "Geosintetis": "PL GEOSINTETIS"
-      };
-
-      let namaSheet = sheetMap[item.Kategori];
-
-      menuHTML += `<button onclick="loadSheet('${namaSheet}')">
-        ${item.Kategori}
+      menuHTML += `<button onclick="loadSheet('${item.nama_sheet}')">
+        ${item.label}
       </button>`;
     });
 
     document.getElementById("menu").innerHTML = menuHTML;
 
+    // load pertama
     if (data.length > 0) {
-      loadSheet(sheetMap[data[0].Kategori]);
+      loadSheet(data[0].nama_sheet);
     }
-  });
+  })
   .catch(() => {
     document.getElementById("menu").innerHTML = "Gagal load menu";
   });
