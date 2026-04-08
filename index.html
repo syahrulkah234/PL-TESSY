@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html>
 <head>
-  <title>PLnya Tessy</title>
+  <title>Pricelist</title>
   <style>
     body { font-family: Arial; }
     #menu button {
@@ -25,7 +25,7 @@
 
 <h2>Daftar Harga</h2>
 
-<div id="menu"></div>
+<div id="menu">Loading menu...</div>
 
 <input type="text" id="search" placeholder="Cari produk...">
 
@@ -42,59 +42,77 @@
 </table>
 
 <script>
-const sheetID = "PL METALAN";
+const sheetID = "2PACX-1vQY2KKsA485VuL2MADDoZv9M-ZBNHvuB7TEebfAM_rTrJJvRdWDztDXoLn4M9_eAjwx9q5BWuzp_lbX";
 let currentData = [];
 
-// MENU
-fetch(`https://docs.google.com/spreadsheets/d/e/2PACX-1vQY2KKsA485VuL2MADDoZv9M-ZBNHvuB7TEebfAM_rTrJJvRdWDztDXoLn4M9_eAjwx9q5BWuzp_lbX/pubhtml${sheetID}/kategori`)
+// LOAD MENU DARI SHEET "kategori"
+fetch(`https://opensheet.elk.sh/${sheetID}/kategori`)
   .then(res => res.json())
   .then(data => {
     let menuHTML = "";
+
     data.forEach(item => {
       menuHTML += `<button onclick="loadSheet('${item.nama_sheet}')">
         ${item.label}
       </button>`;
     });
+
     document.getElementById("menu").innerHTML = menuHTML;
 
-    if (data.length > 0) loadSheet(data[0].nama_sheet);
+    // load pertama
+    if (data.length > 0) {
+      loadSheet(data[0].nama_sheet);
+    }
+  })
+  .catch(() => {
+    document.getElementById("menu").innerHTML = "Gagal load menu";
   });
 
-// LOAD DATA
+// LOAD DATA PER SHEET
 function loadSheet(namaSheet) {
-  fetch(`https://docs.google.com/spreadsheets/d/e/2PACX-1vQY2KKsA485VuL2MADDoZv9M-ZBNHvuB7TEebfAM_rTrJJvRdWDztDXoLn4M9_eAjwx9q5BWuzp_lbX/pubhtml${sheetID}/${namaSheet}`)
+  document.getElementById("tabel").innerHTML = "<tr><td colspan='4'>Loading...</td></tr>";
+
+  fetch(`https://opensheet.elk.sh/${sheetID}/${namaSheet}`)
     .then(res => res.json())
     .then(data => {
       currentData = data;
       tampilkan(data);
+    })
+    .catch(() => {
+      document.getElementById("tabel").innerHTML = "<tr><td colspan='4'>Gagal load data</td></tr>";
     });
 }
 
-// TAMPILKAN
+// TAMPILKAN DATA
 function tampilkan(data) {
   let html = "";
+
   data.forEach(item => {
     html += `<tr>
-      <td>${item.produk}</td>
-      <td>${item.tebal}</td>
+      <td>${item.produk || ""}</td>
+      <td>${item.tebal || ""}</td>
       <td>${formatRupiah(item.harga)}</td>
-      <td>${item.satuan}</td>
+      <td>${item.satuan || ""}</td>
     </tr>`;
   });
+
   document.getElementById("tabel").innerHTML = html;
 }
 
 // FORMAT RUPIAH
 function formatRupiah(angka) {
+  if (!angka) return "";
   return "Rp " + Number(angka).toLocaleString("id-ID");
 }
 
 // SEARCH
 document.getElementById("search").addEventListener("keyup", function() {
   let keyword = this.value.toLowerCase();
+
   let hasil = currentData.filter(item =>
-    item.produk.toLowerCase().includes(keyword)
+    (item.produk || "").toLowerCase().includes(keyword)
   );
+
   tampilkan(hasil);
 });
 </script>
