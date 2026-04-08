@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Pricelist</title>
+  <style>
+    body { font-family: Arial; }
+    #menu button {
+      margin: 5px;
+      padding: 8px 12px;
+      cursor: pointer;
+    }
+    table {
+      border-collapse: collapse;
+      width: 100%;
+      margin-top: 10px;
+    }
+    th, td {
+      border: 1px solid #ccc;
+      padding: 8px;
+    }
+    th { background: #eee; }
+  </style>
+</head>
+<body>
+
+<h2>Daftar Harga</h2>
+
+<div id="menu"></div>
+
+<input type="text" id="search" placeholder="Cari produk...">
+
+<table>
+  <thead>
+    <tr>
+      <th>Produk</th>
+      <th>Tebal</th>
+      <th>Harga</th>
+      <th>Satuan</th>
+    </tr>
+  </thead>
+  <tbody id="tabel"></tbody>
+</table>
+
+<script>
+const sheetID = "ISI_ID_KAMU_DISINI";
+let currentData = [];
+
+// MENU
+fetch(`https://opensheet.elk.sh/${sheetID}/kategori`)
+  .then(res => res.json())
+  .then(data => {
+    let menuHTML = "";
+    data.forEach(item => {
+      menuHTML += `<button onclick="loadSheet('${item.nama_sheet}')">
+        ${item.label}
+      </button>`;
+    });
+    document.getElementById("menu").innerHTML = menuHTML;
+
+    if (data.length > 0) loadSheet(data[0].nama_sheet);
+  });
+
+// LOAD DATA
+function loadSheet(namaSheet) {
+  fetch(`https://opensheet.elk.sh/${sheetID}/${namaSheet}`)
+    .then(res => res.json())
+    .then(data => {
+      currentData = data;
+      tampilkan(data);
+    });
+}
+
+// TAMPILKAN
+function tampilkan(data) {
+  let html = "";
+  data.forEach(item => {
+    html += `<tr>
+      <td>${item.produk}</td>
+      <td>${item.tebal}</td>
+      <td>${formatRupiah(item.harga)}</td>
+      <td>${item.satuan}</td>
+    </tr>`;
+  });
+  document.getElementById("tabel").innerHTML = html;
+}
+
+// FORMAT RUPIAH
+function formatRupiah(angka) {
+  return "Rp " + Number(angka).toLocaleString("id-ID");
+}
+
+// SEARCH
+document.getElementById("search").addEventListener("keyup", function() {
+  let keyword = this.value.toLowerCase();
+  let hasil = currentData.filter(item =>
+    item.produk.toLowerCase().includes(keyword)
+  );
+  tampilkan(hasil);
+});
+</script>
+
+</body>
+</html>
