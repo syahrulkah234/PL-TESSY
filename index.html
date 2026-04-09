@@ -2,25 +2,102 @@
 <html>
 <head>
   <title>Pricelist</title>
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
   <style>
-    body { font-family: Arial; }
-    #menu button {
-      margin: 5px;
-      padding: 8px 12px;
-      cursor: pointer;
+    body {
+      font-family: Arial, sans-serif;
+      margin: 10px;
+      font-size: 14px;
+      background: #f9f9f9;
     }
+
+    h2 {
+      font-size: 18px;
+      margin-bottom: 10px;
+    }
+
+    /* MENU */
+    #menu {
+      display: flex;
+      overflow-x: auto;
+      gap: 8px;
+      padding-bottom: 5px;
+    }
+
+    #menu button {
+      flex: 0 0 auto;
+      padding: 10px 14px;
+      border: none;
+      background: #007bff;
+      color: white;
+      border-radius: 6px;
+      font-size: 14px;
+    }
+
+    #menu button.active {
+      background: #28a745;
+    }
+
+    /* SEARCH */
+    #search {
+      width: 100%;
+      padding: 10px;
+      margin-top: 10px;
+      margin-bottom: 10px;
+      font-size: 14px;
+      border: 1px solid #ccc;
+      border-radius: 6px;
+    }
+
+    /* TABLE */
+    .table-wrapper {
+      overflow-x: auto;
+    }
+
     table {
       border-collapse: collapse;
       width: 100%;
-      margin-top: 10px;
+      min-width: 500px;
+      background: white;
     }
+
     th, td {
-      border: 1px solid #ccc;
-      padding: 8px;
+      padding: 10px;
+      text-align: left;
+      font-size: 13px;
     }
-    th { background: #eee; }
+
+    th {
+      background: #eee;
+      position: sticky;
+      top: 0;
+      z-index: 1;
+    }
+
+    tr:nth-child(even) {
+      background: #fafafa;
+    }
+
+    td:nth-child(3) {
+      font-weight: bold;
+      color: #007b00;
+    }
+
+    @media (max-width: 480px) {
+      th, td {
+        padding: 8px;
+      }
+
+      #menu button {
+        font-size: 13px;
+        padding: 8px 12px;
+      }
+    }
   </style>
 </head>
+
 <body>
 
 <h2>Daftar Harga</h2>
@@ -29,42 +106,38 @@
 
 <input type="text" id="search" placeholder="Cari produk...">
 
-<table>
-  <thead>
-    <tr>
-      <th>Produk</th>
-      <th>Tebal</th>
-      <th>Harga</th>
-      <th>Satuan</th>
-    </tr>
-  </thead>
-  <tbody id="tabel"></tbody>
-</table>
+<div class="table-wrapper">
+  <table>
+    <thead>
+      <tr>
+        <th>Produk</th>
+        <th>Tebal</th>
+        <th>Harga</th>
+        <th>Satuan</th>
+      </tr>
+    </thead>
+    <tbody id="tabel"></tbody>
+  </table>
+</div>
 
 <script>
 const sheetID = "1m-MFmrKUysTBYDmXAP5JqZoChLIa0Rd99d4nO1yH6RE";
 let currentData = [];
 
-// ================= MENU =================
+// MENU
 fetch(`https://opensheet.elk.sh/${sheetID}/kategori`)
   .then(res => res.json())
   .then(data => {
     let menuHTML = "";
 
     data.forEach(item => {
-      let namaSheet = item.nama_sheet;
-      let label = item.label;
-
-      if (!namaSheet) return;
-
-      menuHTML += `<button onclick="loadSheet('${namaSheet}')">
-        ${label}
+      menuHTML += `<button onclick="loadSheet('${item.nama_sheet}', this)">
+        ${item.label}
       </button>`;
     });
 
     document.getElementById("menu").innerHTML = menuHTML;
 
-    // default load
     if (data.length > 0) {
       loadSheet(data[0].nama_sheet);
     }
@@ -73,14 +146,19 @@ fetch(`https://opensheet.elk.sh/${sheetID}/kategori`)
     document.getElementById("menu").innerHTML = "Gagal load menu";
   });
 
-// ================= LOAD DATA =================
-function loadSheet(namaSheet) {
+// LOAD DATA
+function loadSheet(namaSheet, btn) {
   document.getElementById("tabel").innerHTML = "<tr><td colspan='4'>Loading...</td></tr>";
+
+  // tombol aktif
+  if (btn) {
+    document.querySelectorAll("#menu button").forEach(b => b.classList.remove("active"));
+    btn.classList.add("active");
+  }
 
   fetch(`https://opensheet.elk.sh/${sheetID}/${namaSheet}`)
     .then(res => res.json())
     .then(data => {
-      console.log("DATA:", data);
       currentData = data;
       tampilkan(data);
     })
@@ -89,7 +167,7 @@ function loadSheet(namaSheet) {
     });
 }
 
-// ================= DETEKSI KOLOM OTOMATIS =================
+// DETEKSI KOLOM OTOMATIS
 function getValue(item, keywords) {
   for (let key in item) {
     let cleanKey = key.toLowerCase().trim();
@@ -102,7 +180,7 @@ function getValue(item, keywords) {
   return "";
 }
 
-// ================= TAMPILKAN =================
+// TAMPILKAN
 function tampilkan(data) {
   let html = "";
 
@@ -110,11 +188,10 @@ function tampilkan(data) {
     html = "<tr><td colspan='4'>Data kosong</td></tr>";
   } else {
     data.forEach(item => {
-
       let produk = getValue(item, ["produk", "nama"]);
       let tebal  = getValue(item, ["tebal", "ukuran"]);
-      let harga  = getValue(item, ["harga", "price"]);
-      let satuan = getValue(item, ["satuan", "unit"]);
+      let harga  = getValue(item, ["harga"]);
+      let satuan = getValue(item, ["satuan"]);
 
       html += `<tr>
         <td>${produk}</td>
@@ -128,14 +205,14 @@ function tampilkan(data) {
   document.getElementById("tabel").innerHTML = html;
 }
 
-// ================= FORMAT RUPIAH =================
+// FORMAT RUPIAH
 function formatRupiah(angka) {
   if (!angka) return "";
   angka = String(angka).replace(/[^0-9]/g, "");
   return "Rp " + Number(angka).toLocaleString("id-ID");
 }
 
-// ================= SEARCH =================
+// SEARCH
 document.getElementById("search").addEventListener("keyup", function() {
   let keyword = this.value.toLowerCase();
 
