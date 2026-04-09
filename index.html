@@ -2,19 +2,17 @@
 <html>
 <head>
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link rel="stylesheet" href="style.css">
   <title>Pricelist</title>
 
-  <style>
-    * {
-      box-sizing: border-box;
-    }
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
+  <style>
     body {
       font-family: Arial, sans-serif;
       margin: 10px;
       font-size: 14px;
       background: #f9f9f9;
-      overflow-x: hidden;
     }
 
     h2 {
@@ -32,12 +30,12 @@
 
     #menu button {
       flex: 0 0 auto;
-      padding: 8px 12px;
+      padding: 10px 14px;
       border: none;
       background: #007bff;
       color: white;
       border-radius: 6px;
-      font-size: 13px;
+      font-size: 14px;
     }
 
     #menu button.active {
@@ -47,48 +45,58 @@
     /* SEARCH */
     #search {
       width: 100%;
-      padding: 8px;
-      margin: 10px 0;
-      font-size: 13px;
+      padding: 10px;
+      margin-top: 10px;
+      margin-bottom: 10px;
+      font-size: 14px;
       border: 1px solid #ccc;
       border-radius: 6px;
     }
 
     /* TABLE */
     .table-wrapper {
-      width: 100%;
-      overflow-x: hidden;
+      overflow-x: auto;
     }
 
     table {
-      width: 100%;
-      table-layout: fixed;
       border-collapse: collapse;
+      width: 100%;
+      min-width: 500px;
       background: white;
     }
 
     th, td {
-      padding: 6px;
-      font-size: 13px;
-      line-height: 1.3;
+      padding: 10px;
       text-align: left;
-      vertical-align: top;
-      word-break: break-word;
+      font-size: 13px;
     }
 
     th {
       background: #eee;
+      position: sticky;
+      top: 0;
+      z-index: 1;
     }
 
     tr:nth-child(even) {
       background: #fafafa;
     }
 
-    /* PEMBAGIAN KOLOM */
-    td:nth-child(1), th:nth-child(1) { width: 45%; font-weight: 600; }
-    td:nth-child(2), th:nth-child(2) { width: 20%; }
-    td:nth-child(3), th:nth-child(3) { width: 20%; font-weight: bold; color: #007b00; }
-    td:nth-child(4), th:nth-child(4) { width: 15%; }
+    td:nth-child(3) {
+      font-weight: bold;
+      color: #007b00;
+    }
+
+    @media (max-width: 480px) {
+      th, td {
+        padding: 8px;
+      }
+
+      #menu button {
+        font-size: 13px;
+        padding: 8px 12px;
+      }
+    }
   </style>
 </head>
 
@@ -122,25 +130,29 @@ let currentData = [];
 fetch(`https://opensheet.elk.sh/${sheetID}/kategori`)
   .then(res => res.json())
   .then(data => {
-    let html = "";
+    let menuHTML = "";
 
     data.forEach(item => {
-      html += `<button onclick="loadSheet('${item.nama_sheet}', this)">
+      menuHTML += `<button onclick="loadSheet('${item.nama_sheet}', this)">
         ${item.label}
       </button>`;
     });
 
-    document.getElementById("menu").innerHTML = html;
+    document.getElementById("menu").innerHTML = menuHTML;
 
     if (data.length > 0) {
       loadSheet(data[0].nama_sheet);
     }
+  })
+  .catch(() => {
+    document.getElementById("menu").innerHTML = "Gagal load menu";
   });
 
 // LOAD DATA
 function loadSheet(namaSheet, btn) {
   document.getElementById("tabel").innerHTML = "<tr><td colspan='4'>Loading...</td></tr>";
 
+  // tombol aktif
   if (btn) {
     document.querySelectorAll("#menu button").forEach(b => b.classList.remove("active"));
     btn.classList.add("active");
@@ -157,29 +169,24 @@ function loadSheet(namaSheet, btn) {
     });
 }
 
-// AMBIL DATA KOLOM
-function getValue(item, keys) {
+// DETEKSI KOLOM OTOMATIS
+function getValue(item, keywords) {
   for (let key in item) {
-    let k = key.toLowerCase();
-    for (let x of keys) {
-      if (k.includes(x)) return item[key];
+    let cleanKey = key.toLowerCase().trim();
+    for (let k of keywords) {
+      if (cleanKey.includes(k)) {
+        return item[key];
+      }
     }
   }
   return "";
-}
-
-// FORMAT ANGKA (TANPA RP)
-function formatHarga(angka) {
-  if (!angka) return "";
-  angka = String(angka).replace(/[^0-9]/g, "");
-  return Number(angka).toLocaleString("id-ID");
 }
 
 // TAMPILKAN
 function tampilkan(data) {
   let html = "";
 
-  if (!data.length) {
+  if (!data || data.length === 0) {
     html = "<tr><td colspan='4'>Data kosong</td></tr>";
   } else {
     data.forEach(item => {
@@ -191,7 +198,7 @@ function tampilkan(data) {
       html += `<tr>
         <td>${produk}</td>
         <td>${tebal}</td>
-        <td>${formatHarga(harga)}</td>
+        <td>${formatRupiah(harga)}</td>
         <td>${satuan}</td>
       </tr>`;
     });
@@ -200,13 +207,20 @@ function tampilkan(data) {
   document.getElementById("tabel").innerHTML = html;
 }
 
+// FORMAT RUPIAH
+function formatRupiah(angka) {
+  if (!angka) return "";
+  angka = String(angka).replace(/[^0-9]/g, "");
+  return "Rp " + Number(angka).toLocaleString("id-ID");
+}
+
 // SEARCH
 document.getElementById("search").addEventListener("keyup", function() {
-  let key = this.value.toLowerCase();
+  let keyword = this.value.toLowerCase();
 
   let hasil = currentData.filter(item => {
     let produk = getValue(item, ["produk", "nama"]).toLowerCase();
-    return produk.includes(key);
+    return produk.includes(keyword);
   });
 
   tampilkan(hasil);
@@ -215,3 +229,5 @@ document.getElementById("search").addEventListener("keyup", function() {
 
 </body>
 </html>
+
+
