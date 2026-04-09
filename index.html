@@ -32,10 +32,10 @@
 <table>
   <thead>
     <tr>
-      <th>produk</th>
-      <th>tebal</th>
-      <th>harga</th>
-      <th>satuan</th>
+      <th>Produk</th>
+      <th>Tebal</th>
+      <th>Harga</th>
+      <th>Satuan</th>
     </tr>
   </thead>
   <tbody id="tabel"></tbody>
@@ -45,7 +45,7 @@
 const sheetID = "1m-MFmrKUysTBYDmXAP5JqZoChLIa0Rd99d4nO1yH6RE";
 let currentData = [];
 
-// LOAD MENU DARI SHEET "kategori"
+// ================= MENU =================
 fetch(`https://opensheet.elk.sh/${sheetID}/kategori`)
   .then(res => res.json())
   .then(data => {
@@ -59,7 +59,6 @@ fetch(`https://opensheet.elk.sh/${sheetID}/kategori`)
 
     document.getElementById("menu").innerHTML = menuHTML;
 
-    // load pertama
     if (data.length > 0) {
       loadSheet(data[0].nama_sheet);
     }
@@ -68,13 +67,14 @@ fetch(`https://opensheet.elk.sh/${sheetID}/kategori`)
     document.getElementById("menu").innerHTML = "Gagal load menu";
   });
 
-// LOAD DATA PER SHEET
+// ================= LOAD DATA =================
 function loadSheet(namaSheet) {
   document.getElementById("tabel").innerHTML = "<tr><td colspan='4'>Loading...</td></tr>";
 
   fetch(`https://opensheet.elk.sh/${sheetID}/${namaSheet}`)
     .then(res => res.json())
     .then(data => {
+      console.log("DATA:", data);
       currentData = data;
       tampilkan(data);
     })
@@ -83,21 +83,38 @@ function loadSheet(namaSheet) {
     });
 }
 
-// TAMPILKAN DATA
+// ================= DETEKSI KOLOM OTOMATIS =================
+function getValue(item, keywords) {
+  for (let key in item) {
+    let cleanKey = key.toLowerCase().trim();
+    for (let k of keywords) {
+      if (cleanKey.includes(k)) {
+        return item[key];
+      }
+    }
+  }
+  return "";
+}
+
+// ================= TAMPILKAN =================
 function tampilkan(data) {
   let html = "";
-
-  console.log("DATA:", data); // debug
 
   if (!data || data.length === 0) {
     html = "<tr><td colspan='4'>Data kosong</td></tr>";
   } else {
     data.forEach(item => {
+
+      let produk = getValue(item, ["produk", "nama"]);
+      let tebal  = getValue(item, ["tebal", "ukuran"]);
+      let harga  = getValue(item, ["harga", "price"]);
+      let satuan = getValue(item, ["satuan", "unit"]);
+
       html += `<tr>
-        <td>${item.produk || item.Produk || item["Produk "] || ""}</td>
-        <td>${item.tebal || item.Tebal || ""}</td>
-        <td>${formatRupiah(item.harga || item.Harga)}</td>
-        <td>${item.satuan || item.Satuan || ""}</td>
+        <td>${produk}</td>
+        <td>${tebal}</td>
+        <td>${formatRupiah(harga)}</td>
+        <td>${satuan}</td>
       </tr>`;
     });
   }
@@ -105,19 +122,21 @@ function tampilkan(data) {
   document.getElementById("tabel").innerHTML = html;
 }
 
-// FORMAT RUPIAH
+// ================= FORMAT RUPIAH =================
 function formatRupiah(angka) {
   if (!angka) return "";
+  angka = String(angka).replace(/[^0-9]/g, "");
   return "Rp " + Number(angka).toLocaleString("id-ID");
 }
 
-// SEARCH
+// ================= SEARCH =================
 document.getElementById("search").addEventListener("keyup", function() {
   let keyword = this.value.toLowerCase();
 
-  let hasil = currentData.filter(item =>
-    (item.produk || "").toLowerCase().includes(keyword)
-  );
+  let hasil = currentData.filter(item => {
+    let produk = getValue(item, ["produk", "nama"]).toLowerCase();
+    return produk.includes(keyword);
+  });
 
   tampilkan(hasil);
 });
