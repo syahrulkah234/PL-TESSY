@@ -23,24 +23,27 @@ table {
 }
 
 /* CELL */
+/* CELL */
 th, td {
   padding: 6px;
   font-size: 13px;
   line-height: 1.3;
   vertical-align: top;
   word-break: break-word;
+  overflow: hidden;
 }
 
-/* PRODUK (utama, paling besar) */
+/* PRODUK (biar tegas & hitam) */
 td:nth-child(1), th:nth-child(1) {
-  width: 48%;
+  width: 50%;
   font-size: 14px;
   font-weight: 600;
+  color: #000; /* paksa hitam */
 }
 
 /* TEBAL */
 td:nth-child(2), th:nth-child(2) {
-  width: 17%;
+  width: 15%;
   font-size: 12px;
 }
 
@@ -61,4 +64,7 @@ td:nth-child(4), th:nth-child(4) {
 /* PAKSA TIDAK OVERFLOW */
 td, th {
   max-width: 0;
+}
+body {
+  -webkit-font-smoothing: antialiased;
 }
