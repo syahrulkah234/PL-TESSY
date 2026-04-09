@@ -51,18 +51,29 @@ fetch(`https://opensheet.elk.sh/${sheetID}/kategori`)
   .then(data => {
     let menuHTML = "";
 
+    const mapping = {
+      "Metalan": "PL METALAN",
+      "Geosintetis": "PL GEOSINTETIS",
+      "BRC": "PL BRC",
+      "Besi Beton": "PL BESI BETON"
+    };
+
     data.forEach(item => {
-      menuHTML += `<button onclick="loadSheet('${item.nama_sheet}')">
-        ${item.label}
+      let label = item.Kategori;
+      let namaSheet = mapping[label];
+
+      if (!namaSheet) return;
+
+      menuHTML += `<button onclick="loadSheet('${namaSheet}')">
+        ${label}
       </button>`;
     });
 
     document.getElementById("menu").innerHTML = menuHTML;
 
-    if (data.length > 0) {
-      loadSheet(data[0].nama_sheet);
-    }
-  })
+    // default
+    loadSheet("PL METALAN");
+  });
   .catch(() => {
     document.getElementById("menu").innerHTML = "Gagal load menu";
   });
