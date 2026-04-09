@@ -11,9 +11,9 @@ table {
 
 /* PRODUK */
 td:nth-child(1), th:nth-child(1) {
-  width: 55%;
-  font-size: 15px;
-  font-weight: 600;
+  width: 40%;
+  font-size: 12px;
+  font-weight: 500;
   white-space: normal;
   word-wrap: break-word;
 }
