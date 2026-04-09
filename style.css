@@ -9,7 +9,7 @@
 
   td:nth-child(1), th:nth-child(1) {
     width: 40%;
-    font-size: 15px;
+    font-size: 10px;
     font-weight: 600;
     white-space: normal;
   }
