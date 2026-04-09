@@ -1,27 +1,42 @@
+/* GLOBAL FIX */
+* {
+  box-sizing: border-box;
+}
+
 /* WRAPPER */
 .table-wrapper {
-  overflow-x: hidden; /* hilangkan scroll */
+  width: 100%;
+  overflow-x: hidden; /* paksa tidak bisa scroll */
 }
 
 /* TABLE */
 table {
   width: 100%;
-  table-layout: fixed; /* penting */
+  table-layout: fixed; /* kunci lebar */
 }
 
-/* PRODUK */
+/* HEADER & CELL */
+th, td {
+  padding: 8px;
+  font-size: 13px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+/* PRODUK (paling besar) */
 td:nth-child(1), th:nth-child(1) {
-  width: 40%;
-  font-size: 12px;
-  font-weight: 500;
+  width: 50%;
+  font-size: 15px;
+  font-weight: 600;
   white-space: normal;
-  word-wrap: break-word;
+  word-break: break-word;
 }
 
 /* TEBAL */
 td:nth-child(2), th:nth-child(2) {
   width: 15%;
   font-size: 12px;
+  white-space: nowrap;
 }
 
 /* HARGA */
@@ -30,15 +45,12 @@ td:nth-child(3), th:nth-child(3) {
   font-size: 14px;
   font-weight: bold;
   color: #007b00;
+  white-space: nowrap;
 }
 
 /* SATUAN */
 td:nth-child(4), th:nth-child(4) {
-  width: 10%;
+  width: 15%;
   font-size: 12px;
-}
-
-/* BIAR TEKS TIDAK MELEBAR */
-td {
-  word-break: break-word;
+  white-space: nowrap;
 }
