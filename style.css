@@ -26,8 +26,8 @@ th, td {
 /* PRODUK (utama) */
 td:nth-child(1), th:nth-child(1) {
   width: 50%;
-  font-size: 14px;
-  font-weight: 400;
+  font-size: 12px;
+  font-weight: 200;
 }
 
 /* TEBAL */
