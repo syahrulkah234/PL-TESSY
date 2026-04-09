@@ -211,7 +211,7 @@ function tampilkan(data) {
 function formatRupiah(angka) {
   if (!angka) return "";
   angka = String(angka).replace(/[^0-9]/g, "");
-  return "Rp " + Number(angka).toLocaleString("id-ID");
+  return Number(angka).toLocaleString("id-ID");
 }
 
 // SEARCH
