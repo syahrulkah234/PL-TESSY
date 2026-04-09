@@ -87,14 +87,20 @@ function loadSheet(namaSheet) {
 function tampilkan(data) {
   let html = "";
 
-  data.forEach(item => {
-    html += `<tr>
-      <td>${item.produk || item.Produk || item.PRODUK || ""}</td>
-      <td>${item.tebal || item.Tebal || ""}</td>
-      <td>${formatRupiah(item.harga || item.Harga)}</td>
-      <td>${item.satuan || item.Satuan || ""}</td>
-    </tr>`;
-  });
+  console.log("DATA:", data); // debug
+
+  if (!data || data.length === 0) {
+    html = "<tr><td colspan='4'>Data kosong</td></tr>";
+  } else {
+    data.forEach(item => {
+      html += `<tr>
+        <td>${item.produk || item.Produk || item["produk "] || ""}</td>
+        <td>${item.tebal || item.Tebal || ""}</td>
+        <td>${formatRupiah(item.harga || item.Harga)}</td>
+        <td>${item.satuan || item.Satuan || ""}</td>
+      </tr>`;
+    });
+  }
 
   document.getElementById("tabel").innerHTML = html;
 }
