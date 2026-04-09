@@ -1,33 +1,44 @@
-<style>
-  /* CSS lama kamu tetap */
+/* WRAPPER */
+.table-wrapper {
+  overflow-x: hidden; /* hilangkan scroll */
+}
 
-  /* TAMBAHAN BARU */
-  table {
-    table-layout: auto;
-    width: 100%;
-  }
+/* TABLE */
+table {
+  width: 100%;
+  table-layout: fixed; /* penting */
+}
 
-  td:nth-child(1), th:nth-child(1) {
-    width: 40%;
-    font-size: 10px;
-    font-weight: 600;
-    white-space: normal;
-  }
+/* PRODUK */
+td:nth-child(1), th:nth-child(1) {
+  width: 55%;
+  font-size: 15px;
+  font-weight: 600;
+  white-space: normal;
+  word-wrap: break-word;
+}
 
-  td:nth-child(2), th:nth-child(2) {
-    width: 15%;
-    white-space: nowrap;
-  }
+/* TEBAL */
+td:nth-child(2), th:nth-child(2) {
+  width: 15%;
+  font-size: 12px;
+}
 
-  td:nth-child(3), th:nth-child(3) {
-    width: 20%;
-    white-space: nowrap;
-    font-weight: bold;
-    color: #007b00;
-  }
+/* HARGA */
+td:nth-child(3), th:nth-child(3) {
+  width: 20%;
+  font-size: 14px;
+  font-weight: bold;
+  color: #007b00;
+}
 
-  td:nth-child(4), th:nth-child(4) {
-    width: 10%;
-    white-space: nowrap;
-  }
-</style>
+/* SATUAN */
+td:nth-child(4), th:nth-child(4) {
+  width: 10%;
+  font-size: 12px;
+}
+
+/* BIAR TEKS TIDAK MELEBAR */
+td {
+  word-break: break-word;
+}
