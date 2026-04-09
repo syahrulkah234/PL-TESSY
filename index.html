@@ -89,10 +89,10 @@ function tampilkan(data) {
 
   data.forEach(item => {
     html += `<tr>
-      <td>${item.produk || ""}</td>
-      <td>${item.tebal || ""}</td>
-      <td>${formatRupiah(item.harga)}</td>
-      <td>${item.satuan || ""}</td>
+      <td>${item.produk || item.Produk || item.PRODUK || ""}</td>
+      <td>${item.tebal || item.Tebal || ""}</td>
+      <td>${formatRupiah(item.harga || item.Harga)}</td>
+      <td>${item.satuan || item.Satuan || ""}</td>
     </tr>`;
   });
 
