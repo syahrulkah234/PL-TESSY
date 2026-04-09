@@ -94,7 +94,7 @@ function tampilkan(data) {
   } else {
     data.forEach(item => {
       html += `<tr>
-        <td>${item.produk || item.Produk || item["produk "] || ""}</td>
+        <td>${item.produk || item.Produk || item["Produk "] || ""}</td>
         <td>${item.tebal || item.Tebal || ""}</td>
         <td>${formatRupiah(item.harga || item.Harga)}</td>
         <td>${item.satuan || item.Satuan || ""}</td>
